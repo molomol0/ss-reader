@@ -30,7 +30,32 @@ brew install coreutils
 
 > Most dependencies come pre-installed on Linux. macOS users need GNU coreutils since the script uses GNU-specific options (e.g. `grep -P`).
 
+## Installation
+
+### One-liner
+
+```bash
+bash <(curl -s https://raw.githubusercontent.com/molomol0/ss-reader/main/install.sh)
+```
+
+This will:
+- Clone the repo to `~/.ss-reader`
+- Symlink `ss-reader` into `~/.local/bin`
+- You can then run `ss-reader` from anywhere
+
+### Uninstall
+
+```bash
+rm -rf ~/.ss-reader ~/.local/bin/ss-reader
+```
+
 ## Usage
+
+```bash
+ss-reader
+```
+
+Or run directly without installing:
 
 ```bash
 chmod +x reader.sh
