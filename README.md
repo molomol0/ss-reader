@@ -1,34 +1,34 @@
-# Shadow Slave Reader
+# Novel Reader
 
-A terminal-based reader for the Shadow Slave web novel.
+A terminal-based reader for web novels from [readernovel.net](https://www.readernovel.net). Supports multiple novels with independent progress tracking.
 
 ## Requirements
 
-- **Bash** (4.0+)
-- **curl** — for fetching chapters
-- **less** — for paging through chapter text
-- **GNU coreutils** — `sed`, `grep`, `paste`, `tac`, `fold`, `cut`, `wc`, `head`, `find`
-- **ncurses** — for `tput` (terminal width detection)
+- **Bash** 4.0+
+- **curl** — fetching chapters and the novel catalog
+- **less** — paging through chapter text
+- **GNU coreutils** — `sed`, `grep`, `tac`, `fold`, `cut`, `wc`, `head`, `find`, `awk`
+- **ncurses** — `tput` for terminal width detection
+- **fzf** *(optional)* — real-time fuzzy search when browsing novels
 
-### Install on Debian/Ubuntu
+### Install dependencies
 
+**Debian/Ubuntu**
 ```bash
-sudo apt install curl less coreutils ncurses-bin
+sudo apt install curl less coreutils ncurses-bin fzf
 ```
 
-### Install on Arch
-
+**Arch**
 ```bash
-sudo pacman -S curl less coreutils ncurses
+sudo pacman -S curl less coreutils ncurses fzf
 ```
 
-### Install on macOS
-
+**macOS**
 ```bash
-brew install coreutils
+brew install coreutils fzf
 ```
 
-> Most dependencies come pre-installed on Linux. macOS users need GNU coreutils since the script uses GNU-specific options (e.g. `grep -P`).
+> macOS users need GNU coreutils — the script uses GNU-specific options (`grep -P`, `tac`).
 
 ## Installation
 
@@ -41,7 +41,6 @@ bash <(curl -s https://raw.githubusercontent.com/molomol0/ss-reader/main/install
 This will:
 - Clone the repo to `~/.ss-reader`
 - Symlink `ss-reader` into `~/.local/bin`
-- You can then run `ss-reader` from anywhere
 
 ### Uninstall
 
@@ -62,7 +61,7 @@ chmod +x reader.sh
 ./reader.sh
 ```
 
-### Commands
+## Commands
 
 | Key | Action |
 |-----|--------|
@@ -71,6 +70,22 @@ chmod +x reader.sh
 | `c` | Re-read current chapter |
 | `g` | Jump to a specific chapter number |
 | `l` | List chapters around current position |
+| `s` | Switch to another saved novel |
+| `a` | Browse & add a new novel from the catalog |
 | `q` | Quit |
 
-Your reading progress is saved automatically between sessions.
+While reading (`less`): **Space** to scroll, **q** to go back to the menu.
+
+## Data & caching
+
+All data is stored in `.reader_data/` next to the script (or install dir):
+
+| File | Description | TTL |
+|------|-------------|-----|
+| `catalog` | Full novel catalog from the site | 24 hours |
+| `<slug>.chapters` | Chapter list per novel | 1 hour |
+| `<slug>.progress` | Reading position per novel | permanent |
+| `novels` | Your saved library | permanent |
+
+On first launch you'll be prompted to browse and pick a novel.
+Progress and library are tracked independently per novel across sessions.
