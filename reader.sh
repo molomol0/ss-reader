@@ -146,6 +146,21 @@ get_adjacent_slug() {
     sed -n "${line_num}p" "$cache" | cut -d'|' -f1
 }
 
+# Decode all HTML entities (named like &mdash; and numeric like &#8217;),
+# whether standalone or inside a word
+decode_entities() {
+    if command -v python3 &>/dev/null; then
+        python3 -c 'import html,sys; sys.stdout.write(html.unescape(sys.stdin.read()))'
+    else
+        # Fallback: common entities only
+        sed 's/&lt;/</g; s/&gt;/>/g; s/&quot;/"/g; s/&#0*39;/'"'"'/g; s/&apos;/'"'"'/g;
+             s/&nbsp;/ /g; s/&lsquo;/‘/g; s/&rsquo;/’/g; s/&ldquo;/“/g; s/&rdquo;/”/g;
+             s/&mdash;/—/g; s/&ndash;/–/g; s/&hellip;/…/g; s/&#8216;/‘/g; s/&#8217;/’/g;
+             s/&#8220;/“/g; s/&#8221;/”/g; s/&#8211;/–/g; s/&#8212;/—/g; s/&#8230;/…/g;
+             s/&amp;/\&/g'
+    fi
+}
+
 # Fetch and display a chapter
 read_chapter() {
     local novel_slug="$1"
@@ -175,7 +190,7 @@ read_chapter() {
         | sed -E 's/<br\s*\/?>/\n/g' \
         | sed -E 's/<p[^>]*>/\n\n/g; s/<\/p>/\n/g' \
         | sed -E 's/<[^>]+>//g' \
-        | sed 's/&amp;/\&/g; s/&lt;/</g; s/&gt;/>/g; s/&quot;/"/g; s/&#39;/'"'"'/g; s/&nbsp;/ /g' \
+        | decode_entities \
         | sed '/^\s*$/{ N; /^\s*\n\s*$/{ s/\n\s*//; }; }' \
         | fold -s -w "$term_width"
 
